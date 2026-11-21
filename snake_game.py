@@ -2,10 +2,8 @@ import pygame
 import random
 import sys
 
-# Pygame initialize karein with custom buffer for smooth sound
-pygame.mixer.pre_init(44100, -16, 2, 512)
+# Pygame initialize karein
 pygame.init()
-pygame.mixer.init()
 
 # Constants 
 GRID_WIDTH = 15
@@ -22,23 +20,12 @@ DARK_GREEN = (39, 174, 96)
 RED = (231, 76, 60)
 GRAY = (40, 40, 40)
 
-def load_sounds():
-    sounds = {}
-    try:
-        sounds['eat'] = pygame.mixer.Sound('eat.wav')
-        sounds['game_over'] = pygame.mixer.Sound('game_over.wav')
-    except Exception as e:
-        print(f"Warning: Could not load sound files ({e}). Make sure 'eat.wav' and 'game_over.wav' are in the same folder.")
-        sounds['eat'] = None
-        sounds['game_over'] = None
-    return sounds
-
 # Reset Game state function
 def reset_game():
     snake = [(7, 7)]
     direction = 'RIGHT'
     score = 0
-# Food ko strictly 0 se GRID_WIDTH-1 aur GRID_HEIGHT-1 ke beech me spawn karwaya hai
+    # Food ko strictly 0 se GRID_WIDTH-1 aur GRID_HEIGHT-1 ke beech me spawn karwaya hai
     food = (random.randint(0, GRID_WIDTH - 1), random.randint(0, GRID_HEIGHT - 1))
     while food in snake:
         food = (random.randint(0, GRID_WIDTH - 1), random.randint(0, GRID_HEIGHT - 1))
@@ -53,9 +40,6 @@ def main():
     # Fonts
     font_large = pygame.font.SysFont(None, 42)
     font_medium = pygame.font.SysFont(None, 24)
-
-    # Load Sounds
-    sounds = load_sounds()
 
     # Game State Variables
     snake, direction, score, food = reset_game()
@@ -109,8 +93,6 @@ def main():
                 head_y < 0 or head_y >= GRID_HEIGHT or 
                 new_head in snake):
                 game_over = True
-                if sounds['game_over']:
-                    sounds['game_over'].play()
                 if score > high_score:
                     high_score = score
             else:
@@ -119,8 +101,6 @@ def main():
                 # Check Food eaten
                 if new_head == food:
                     score += 10
-                    if sounds['eat']:
-                        sounds['eat'].play()
                         
                     # Spawn new food strictly inside the 15x15 grid limits
                     while True:
@@ -152,7 +132,7 @@ def main():
                 pygame.draw.rect(screen, DARK_GREEN, seg_rect, border_radius=4)  # Body
 
         # Draw Score HUD 
-        current_fps = min(8 + (score // 30), 20)
+        current_fps = min(5 + (score // 30), 20)
         score_surface = font_medium.render(f"Score: {score}  |  High Score: {high_score}  |  Speed: {current_fps} FPS", True, WHITE)
         screen.blit(score_surface, (15, 12))
 
